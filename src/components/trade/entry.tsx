@@ -1,13 +1,16 @@
 import { useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { CheckCheckIcon, CheckCircle, CheckCircle2, CheckIcon, ChevronDown, Copy } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Collection } from "@/lib/data";
-import { summaryShort } from "@/lib/data";
+import { summary, summaryShort } from "@/lib/data";
 import type { TradingItem } from "@/lib/tradeData";
+import { toast } from "sonner";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 
 interface CollectionRowProps {
   title: Collection;
   defaultExpanded?: boolean;
+  isSearching?: boolean;
   selectedIds: Set<string>;
   onToggleSelect: (id: string) => void;
 }
@@ -21,9 +24,19 @@ function EntryRow({
   selected: boolean;
   onToggleSelect: (id: string) => void;
 }) {
+  const [copied, setCopied] = useState(false);
+
   const handleCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.stopPropagation();
     if (entry.status !== "NFT") onToggleSelect(entry.id);
+  };
+
+  const handleCopySummary = () => {
+    const summaryText = summary(entry);
+    navigator.clipboard.writeText(summaryText);
+    setCopied(true);
+    toast.info(`"${summaryText}" copied!`);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
@@ -56,33 +69,52 @@ function EntryRow({
         </label>
 
         {entry.status === "NFT" && (
-          <div className={cn("flex", entry.nftTil && "-space-x-px")}>
-            <span
-              title={entry.nftTil ? `Not for Trade until ${entry.nftTil}` : "Not for Trade"}
-              className={cn(
-                "cursor-help text-xs px-1.5 py-0.5 rounded font-medium tracking-wide",
-                entry.nftTil ? "rounded-r-none" : "",
-                "bg-[oklch(0.25_0.08_25)] text-[oklch(0.70_0.14_25)] border border-[oklch(0.35_0.10_25)]"
-              )}
-            >
-              NFT
-            </span>
-            {entry.nftTil && (
-              <span
-                title={`until ${entry.nftTil}`}
-                className="cursor-help text-xs px-1.5 py-0.5 rounded-l-none rounded-r font-medium tracking-wide bg-[oklch(0.20_0.08_25)] text-[oklch(0.70_0.14_25)] border border-[oklch(0.35_0.10_25)]"
-              >
-                until {entry.nftTil}
-              </span>
-            )}
-          </div>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className={cn("flex", entry.nftTil && "-space-x-px")}>
+                <span
+                  className={cn(
+                    "cursor-help text-xs px-1.5 py-0.5 rounded font-medium tracking-wide",
+                    entry.nftTil ? "rounded-r-none" : "",
+                    "bg-[oklch(0.25_0.08_25)] text-[oklch(0.70_0.14_25)] border border-[oklch(0.35_0.10_25)]"
+                  )}
+                >
+                  NFT
+                </span>
+                {entry.nftTil && (
+                  <span
+                    className="cursor-help text-xs px-1.5 py-0.5 rounded-l-none rounded-r font-medium tracking-wide bg-[oklch(0.20_0.08_25)] text-[oklch(0.70_0.14_25)] border border-[oklch(0.35_0.10_25)]"
+                  >
+                    until {entry.nftTil}
+                  </span>
+                )}
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              {entry.nftTil ? `Not for Trade until ${entry.nftTil}` : "Not for Trade"}
+            </TooltipContent>
+          </Tooltip>
         )}
       </div>
 
       {/* Metadata */}
-      <p className="text-xs text-shadow-muted-foreground leading-relaxed">
-        {<span>{summaryShort(entry)}</span>}
-      </p>
+      <div className="flex items-start gap-2">
+        <p className="text-xs text-shadow-muted-foreground leading-relaxed">
+          {<span>{summaryShort(entry)}</span>}
+        </p>
+        <button
+          onClick={handleCopySummary}
+          className="flex-shrink-0 p-1 hover:bg-muted rounded transition-colors"
+          title="Copy summary"
+          aria-label="Copy summary"
+        >
+          {copied ? (
+            <CheckIcon className="w-3.5 h-3.5 text-green-600" />
+          ) : (
+            <Copy className="w-3.5 h-3.5 text-muted-foreground" />
+          )}
+        </button>
+      </div>
 
       {/* Cast */}
       {entry.cast && entry.cast.length > 0 && (
@@ -120,10 +152,12 @@ function EntryRow({
 export function CollectionRow({
   title,
   defaultExpanded = false,
+  isSearching = false,
   selectedIds,
   onToggleSelect,
 }: CollectionRowProps) {
   const [expanded, setExpanded] = useState(defaultExpanded);
+  const isExpanded = isSearching ? true : expanded;
 
   const hasSelected = title.entries.some(
     (e) => e.status !== "NFT" && selectedIds.has(e.id)
@@ -139,9 +173,9 @@ export function CollectionRow({
     >
       {/* Header — title only, no tags */}
       <button
-        onClick={() => setExpanded((v) => !v)}
+        onClick={() => !isSearching && setExpanded((v) => !v)}
         className="w-full flex items-center justify-between px-4 py-3 text-left bg-card hover:bg-muted transition-colors"
-        aria-expanded={expanded}
+        aria-expanded={isExpanded}
       >
         <span className="text-sm text-foreground font-normal leading-snug">
           {title.title}
@@ -154,13 +188,13 @@ export function CollectionRow({
         <ChevronDown
           className={cn(
             "w-4 h-4 text-muted-foreground flex-shrink-0 ml-3 transition-transform duration-200",
-            expanded && "rotate-180"
+            isExpanded && "rotate-180"
           )}
         />
       </button>
 
       {/* Sub-entries */}
-      {expanded && (
+      {isExpanded && (
         <div className="bg-card border-t border-border p-3 space-y-2">
           {title.entries.map((entry) => (
             <EntryRow

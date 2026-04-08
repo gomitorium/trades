@@ -14,6 +14,7 @@ import { toast } from "sonner"
 import { Skeleton } from "../ui/skeleton"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible"
 import { AlertCircle } from "lucide-react"
+import { TooltipProvider } from "../ui/tooltip"
 
 export function CollectionPage() {
     const [query, setQuery] = useState("")
@@ -40,23 +41,41 @@ export function CollectionPage() {
     const filteredTitles = useMemo(() => {
         if (!query.trim()) return collections
         const lower = query.toLowerCase()
-        return collections.filter((titleGroup) => {
-            if (titleGroup.title.toLowerCase().includes(lower)) return true
-            return titleGroup.entries.some(
-                (entry) =>
-                    entry.master.toLowerCase().includes(lower) ||
-                    entry.edition.toLowerCase().includes(lower) ||
-                    entry.format.toLowerCase().includes(lower) ||
-                    entry.cast?.some(
-                        (m) =>
-                            m.name.toLowerCase().includes(lower) ||
-                            m.role.toLowerCase().includes(lower)
-                    )
-            )
-        })
+        if(lower.length < 3) return collections // Don't filter for very short queries to avoid hiding too much data
+        return collections
+            .map((titleGroup) => {
+                const matchingEntries = titleGroup.entries.filter(
+                    (entry) =>
+                        entry.master.toLowerCase().includes(lower) ||
+                        entry.edition.toLowerCase().includes(lower) ||
+                        entry.format.toLowerCase().includes(lower) ||
+                        entry.status.toLowerCase() === lower ||
+                        entry.cast?.some(
+                            (m) =>
+                                m.name.toLowerCase().includes(lower) ||
+                                m.role.toLowerCase().includes(lower)
+                        )
+                )
+                
+                // Include collection if title matches or if there are matching entries
+                if (titleGroup.title.toLowerCase().includes(lower)) {
+                    return titleGroup
+                }
+                
+                // If title doesn't match, only include if there are matching entries
+                if (matchingEntries.length > 0) {
+                    return {
+                        ...titleGroup,
+                        entries: matchingEntries,
+                    }
+                }
+                
+                return null
+            })
+            .filter((group) => group !== null) as Collection[]
     }, [query, collections])
 
-    const isSearching = query.trim().length > 0
+    const isSearching = query.trim().length >= 3;
 
     const handleToggleSelect = (id: string) => {
         setSelectedIds((prev) => {
@@ -151,7 +170,8 @@ export function CollectionPage() {
     }
 
     return (
-        <main className="min-h-screen bg-background px-4 py-10">
+        <TooltipProvider>
+            <main className="min-h-screen bg-background px-4 py-10">
             <div className="mx-auto max-w-3xl space-y-6">
                 {/* Header */}
                 <div className="space-y-1">
@@ -163,6 +183,11 @@ export function CollectionPage() {
                     <p className="text-sm leading-relaxed text-muted-foreground">
                         Browse or search my bootlegs below. Select any you're interested in
                         and submit your trade request at the bottom.
+                    </p>
+                    <p className="text-sm leading-relaxed text-muted-foreground">
+                        <span>Discord: @gomit</span>
+                        <br />
+                        <span>Email: <a href="mailto:gomit.jesting@gmail.com" className="text-lime-500 hover:underline hover:text-lime-300" target="_blank" rel="noopener noreferrer">gomit.jesting@gmail.com</a></span>
                     </p>
                 </div>
 
@@ -187,15 +212,16 @@ export function CollectionPage() {
                             <span>1:1 trading is preferred, but I am open to offers so feel free to reach out!</span>
                             <span>Please ensure your trading list is accessible and that bootlink are preferably in MEGA format for easy viewing.</span>
                             <span>If you notice any errors or have any questions, please let me know!</span>
-                            <span>You can reach me on Discord at @gomit or via email at gomit.jesting@gmail.com.</span>
                             <span className="text-muted-foreground">Shoutout to https://mazing2261.github.io/trading-list/ for whom I have took heavy inspiration for this trading site from.</span>
                         </div>
                     </CollapsibleContent>
                 </Collapsible>
 
                 {/* Search */}
+                <div className="flex items-center justify-between">
                 <SearchBar query={query} onQueryChange={setQuery} />
-
+                <span className="text-muted-foreground text-xs">{allEntries.length} recordings ({allEntries.filter((e) => e.status !== "NFT").length} tradable)</span>
+                </div>
                 {/* Flat list — no section groupings */}
                 {isSearching && filteredTitles.length === 0 ? (
                     <p className="text-sm text-muted-foreground">
@@ -213,6 +239,7 @@ export function CollectionPage() {
                                 key={titleGroup.title}
                                 title={titleGroup}
                                 defaultExpanded={isSearching}
+                                isSearching={isSearching}
                                 selectedIds={selectedIds}
                                 onToggleSelect={handleToggleSelect}
                             />
@@ -231,5 +258,6 @@ export function CollectionPage() {
             </div>
             <Toaster />
         </main>
+        </TooltipProvider>
     )
 }

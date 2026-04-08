@@ -41,6 +41,17 @@ const fetchTradingData = async (): Promise<Record<CSV_KEYS, string>[]> => {
 };
 
 const mapRawToTradingItems = (data: Record<CSV_KEYS, string>[]): TradingItem[] => {
+    const parseDate = (dateStr: string): Date => {
+        const dateMatch = dateStr.match(/(\d{1,2})?\s*([A-Z][a-z]+)\s*,?\s*(\d{4})/);
+        if (!dateMatch) return new Date(0);
+        
+        const day = dateMatch[1] ? parseInt(dateMatch[1]) : 1;
+        const month = dateMatch[2];
+        const year = dateMatch[3];
+        
+        return new Date(`${month} ${day}, ${year}`);
+    };
+
     return data.map((row) => ({
         id: generateGuid(),
         title: row["Name"],
@@ -62,7 +73,7 @@ const mapRawToTradingItems = (data: Record<CSV_KEYS, string>[]): TradingItem[] =
         nftTil: row["NFT Til"],
         status: row["Trade Status"] as TradingItem["status"],
         personalNotes: row["Personal Notes"],
-    }));
+    })).sort((a, b) => parseDate(a.date).getTime() - parseDate(b.date).getTime());
 }
 
 export const generateGuid = (): string => {
