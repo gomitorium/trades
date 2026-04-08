@@ -1,4 +1,4 @@
-import { CollectionPage } from "./components/trade/Collection"
+import { CollectionPage } from "./components/trade/collection"
 
 export function App() {
   return (

@@ -7,7 +7,6 @@ interface SearchBarProps {
 }
 
 export function SearchBar({ onQueryChange, query }: SearchBarProps) {
-  const [activeIndex, setActiveIndex] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -16,7 +15,6 @@ export function SearchBar({ onQueryChange, query }: SearchBarProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     onQueryChange(value);
-    setActiveIndex(-1);
   };
 
   const handleClear = () => {

@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { X } from "lucide-react";
-import { summary, type Collection } from "@/lib/data";
+import { summary } from "@/lib/data";
 import type { TradingItem } from "@/lib/tradeData";
 import { Skeleton } from "../ui/skeleton";
 

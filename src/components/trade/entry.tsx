@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Collection } from "@/lib/data";
-import { summary, summaryShort } from "@/lib/data";
+import { summaryShort } from "@/lib/data";
 import type { TradingItem } from "@/lib/tradeData";
 
 interface CollectionRowProps {
