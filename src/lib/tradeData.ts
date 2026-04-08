@@ -73,7 +73,7 @@ const mapRawToTradingItems = (data: Record<CSV_KEYS, string>[]): TradingItem[] =
         nftTil: row["NFT Til"],
         status: row["Trade Status"] as TradingItem["status"],
         personalNotes: row["Personal Notes"],
-    })).sort((a, b) => parseDate(a.date).getTime() - parseDate(b.date).getTime());
+    })).sort((a, b) => a.title.localeCompare(b.title) || parseDate(a.date).getTime() - parseDate(b.date).getTime());
 }
 
 export const generateGuid = (): string => {

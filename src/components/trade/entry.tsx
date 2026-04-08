@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CheckCheckIcon, CheckCircle, CheckCircle2, CheckIcon, ChevronDown, Copy } from "lucide-react";
+import { CheckIcon, ChevronDown, Copy } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Collection } from "@/lib/data";
 import { summary, summaryShort } from "@/lib/data";
