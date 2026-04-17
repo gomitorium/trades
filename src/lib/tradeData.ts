@@ -52,6 +52,12 @@ const mapRawToTradingItems = (data: Record<CSV_KEYS, string>[]): TradingItem[] =
         return new Date(`${month} ${day}, ${year}`);
     };
 
+    const getSortTitle = (title: string): string => {
+        const trimmedTitle = title.trim();
+        const match = trimmedTitle.match(/^the\s+/i);
+        return match ? trimmedTitle.slice(match[0].length) : trimmedTitle;
+    };
+
     return data.map((row) => ({
         id: generateGuid(),
         title: row["Name"],
@@ -73,7 +79,7 @@ const mapRawToTradingItems = (data: Record<CSV_KEYS, string>[]): TradingItem[] =
         nftTil: row["NFT Til"],
         status: row["Trade Status"] as TradingItem["status"],
         personalNotes: row["Personal Notes"],
-    })).sort((a, b) => a.title.localeCompare(b.title) || parseDate(a.date).getTime() - parseDate(b.date).getTime());
+    })).sort((a, b) => getSortTitle(a.title).localeCompare(getSortTitle(b.title)) || parseDate(a.date).getTime() - parseDate(b.date).getTime());
 }
 
 export const generateGuid = (): string => {

@@ -176,7 +176,7 @@ export function CollectionPage() {
             const json = await res.json()
             console.log("Response from server:", json);
             if (json.status === "OK") {
-                toast.success("Trade request submitted successfully! I will get back to you as soon as I can.")
+                toast.success("Trade request submitted! I will get back to you as soon as I can. 😊")
                 setSelectedIds(new Set()) // Clear selections after successful submission
             } else {
                 toast.error("Failed to submit trade request. Please try again later.")
@@ -202,7 +202,7 @@ export function CollectionPage() {
                         <img src={catgif} alt="cat gif" className="inline w-[28px] h-[19px] mb-1" />
                     </h3>
                     <p className="text-sm leading-relaxed text-muted-foreground text-xs">
-                        Browse or search my bootlegs below. Select any you're interested in
+                        Browse or search my items below. Select any you're interested in
                         and submit your trade request at the bottom.
                     </p>
                 </div>
@@ -221,18 +221,40 @@ export function CollectionPage() {
                             </div>
                         </button>
                     </DialogTrigger>
-                    <DialogContent>
+                    <DialogContent className="min-w-5/12">
                         <div className="flex items-start gap-3 mb-1">
                             <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-1" />
                             <h2 className="text-lg font-semibold text-foreground">Important Rules & Information</h2>
                         </div>
-                        <div className="space-y-3 text-sm">
-                            <span className="block">I don't trade NFT boots!</span>
-                            <span className="block">If an item is marked as NFT, you cannot add it as a trade request.</span>
-                            <span className="block">1:1 trading is preferred, but I am open to offers so feel free to reach out!</span>
-                            <span className="block">Ensure your trading list is accessible and that bootlinks are preferably in MEGA format for easy viewing.</span>
-                            <span className="block">I will answer you as soon as possible per mail.</span>
-                            <span className="block">If you notice any errors or have any questions, please let me know!</span>
+                        <div className="space-y-2.5 text-sm">
+                            <div className="bg-muted-foreground/10 border border-muted-foreground/30 rounded-md p-2">
+                                <p className="text-xs font-medium text-muted-foreground text-mb-0.5">I am down for literally anything, though I do primarily trade only video items</p>
+                            </div>
+                            <div className="bg-muted-foreground/10 border border-muted-foreground/30 rounded-md p-2">
+                                <p className="text-xs font-medium text-muted-foreground text-mb-0.5">I respect the NFT status, hence if an item is marked as NFT, it means I consider it non-tradeable and will not accept any trade offers for it nor can you request an NFT item in a trade.
+                                </p>
+                            </div>
+                            <div className="bg-muted-foreground/10 border border-muted-foreground/30 rounded-md p-2">
+                                <p className="text-xs font-medium text-muted-foreground text-mb-0.5">1:1 video trading please, with the exception of some items that I will notify upon request. When you request an item that is a multi-parter, I will usually count it as 1 trade item together. 
+                                </p>
+                            </div>
+                            <div className="bg-muted-foreground/10 border border-muted-foreground/30 rounded-md p-2">
+                                <p className="text-xs font-medium text-muted-foreground text-mb-0.5">Ensure your trading list is accessible. I do not have encora, so upon request please provide a public-facing alternative.
+                                </p>
+                            </div>
+                            <div className="bg-muted-foreground/10 border border-muted-foreground/30 rounded-md p-2">
+                                <p className="text-xs font-medium text-muted-foreground text-mb-0.5">I prefer links via MEGA, but whatever works for you and, yknow works. You will receive MEGA links with an expiration of a week.
+                                </p>
+                            </div>
+                            <div className="bg-muted-foreground/10 border border-muted-foreground/30 rounded-md p-2">
+                                <p className="text-xs font-medium text-muted-foreground text-mb-0.5">I prefer links via MEGA, but whatever works for you and, yknow works. You will receive MEGA links with an expiration of a week.
+                                </p>
+                            </div>
+                            <div className="bg-muted-foreground/10 border border-muted-foreground/30 rounded-md p-2">
+                                <p className="text-xs font-medium brightness-95 text-red-400 text-mb-0.5">Do not send me whack ass rips or compressed links. If it is not indicated and I get one, I will immediately stop the trade
+                                </p>
+                            </div>
+                            <span className="block">If you notice any errors or have any questions, please let me know via: </span>
                             <div className="flex gap-2">
                                 <div className="bg-muted-foreground/10 border border-muted-foreground/30 rounded-md p-2">
                                     <p className="text-xs font-medium text-muted-foreground mb-0.5">Discord: @gomit</p>

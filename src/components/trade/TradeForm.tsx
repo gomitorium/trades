@@ -3,6 +3,7 @@ import { X } from "lucide-react";
 import { summary } from "@/lib/data";
 import type { TradingItem } from "@/lib/tradeData";
 import { Skeleton } from "../ui/skeleton";
+import { toast } from "sonner";
 
 interface TradeFormProps {
   selectedEntries: (TradingItem & { titleName: string })[];
@@ -26,6 +27,7 @@ export function TradeForm({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    toast.info(`Submitting your trade request of ${selectedEntries.length} items...`);
     onSubmit({ email, tradingListUrl, message });
     setEmail("");
     setTradingListUrl("");
