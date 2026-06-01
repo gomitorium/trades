@@ -14,7 +14,7 @@ import { toast } from "sonner"
 import { Skeleton } from "../ui/skeleton"
 import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog"
 import { Button } from "../ui/button"
-import { AlertCircle, Filter } from "lucide-react"
+import { AlertCircle, Filter, Sparkles } from "lucide-react"
 import { TooltipProvider } from "../ui/tooltip"
 import catgif from "@/assets/cat-meme-wave-emoji.gif";
 
@@ -93,6 +93,16 @@ export function CollectionPage() {
         
         return result
     }, [query, collections, hideNFT, hideNFT])
+
+    const freshOutOfNFT = useMemo(() => {
+        const now = new Date()
+        const oneMonthAgo = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate())
+        return allEntries.filter((entry) => {
+            if (!entry.nftTil) return false
+            const nftDate = new Date(entry.nftTil)
+            return !isNaN(nftDate.getTime()) && nftDate >= oneMonthAgo && nftDate <= now
+        })
+    }, [allEntries])
 
     const isSearching = query.trim().length >= 3;
 
@@ -216,7 +226,7 @@ export function CollectionPage() {
                                 <div className="flex-1 text-left">
                                     <h4 className="text-sm font-semibold text-foreground">Important Rules & Information</h4>
                                     <p className="text-xs text-muted-foreground mt-0.5">Click to read</p>
-                                    <p className="text-xs text-muted-foreground mt-0.5">Last updated: 16 April 2026</p>
+                                    <p className="text-xs text-muted-foreground mt-0.5">Last updated: 01 June 2026</p>
                                 </div>
                             </div>
                         </button>
@@ -228,7 +238,7 @@ export function CollectionPage() {
                         </div>
                         <div className="space-y-2.5 text-sm">
                             <div className="bg-muted-foreground/10 border border-muted-foreground/30 rounded-md p-2">
-                                <p className="text-xs font-medium text-muted-foreground text-mb-0.5">I am down for literally anything, though I do primarily trade only video items</p>
+                                <p className="text-xs font-medium text-muted-foreground text-mb-0.5">I trade video only, but I am down to trade anything.</p>
                             </div>
                             <div className="bg-muted-foreground/10 border border-muted-foreground/30 rounded-md p-2">
                                 <p className="text-xs font-medium text-muted-foreground text-mb-0.5">I respect the NFT status, hence if an item is marked as NFT, it means I consider it non-tradeable and will not accept any trade offers for it nor can you request an NFT item in a trade.
@@ -239,11 +249,7 @@ export function CollectionPage() {
                                 </p>
                             </div>
                             <div className="bg-muted-foreground/10 border border-muted-foreground/30 rounded-md p-2">
-                                <p className="text-xs font-medium text-muted-foreground text-mb-0.5">Ensure your trading list is accessible. I do not have encora, so upon request please provide a public-facing alternative.
-                                </p>
-                            </div>
-                            <div className="bg-muted-foreground/10 border border-muted-foreground/30 rounded-md p-2">
-                                <p className="text-xs font-medium text-muted-foreground text-mb-0.5">I prefer links via MEGA, but whatever works for you and, yknow works. You will receive MEGA links with an expiration of a week.
+                                <p className="text-xs font-medium text-muted-foreground text-mb-0.5">Ensure your trading list is accessible. I don't have encora, so upon request please provide a public-facing alternative.
                                 </p>
                             </div>
                             <div className="bg-muted-foreground/10 border border-muted-foreground/30 rounded-md p-2">
@@ -267,6 +273,28 @@ export function CollectionPage() {
                         </div>
                     </DialogContent>
                 </Dialog>
+
+                {/* Fresh out of NFT */}
+                {freshOutOfNFT.length > 0 && (
+                    <div className="rounded-md border border-green-500/30 bg-green-500/5 px-5 py-4">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Sparkles className="w-4 h-4 text-green-500" />
+                            <h4 className="text-sm font-semibold text-foreground">Fresh out of NFT</h4>
+                        </div>
+                        <div className="space-y-1">
+                            {freshOutOfNFT.map((entry) => (
+                                <div
+                                    key={entry.id}
+                                    className="flex items-center justify-between text-xs rounded px-2 py-1.5 bg-green-500/5 hover:bg-green-500/10 transition-colors cursor-pointer"
+                                    onClick={() => scrollToEntry(entry.id)}
+                                >
+                                    <span className="text-foreground truncate">{summary(entry)}</span>
+                                    <span className="text-muted-foreground ml-2 whitespace-nowrap">NFT ended {entry.nftTil}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 {/* Search */}
                 <div className="flex items-center gap-2">
